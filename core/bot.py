@@ -133,11 +133,12 @@ class Bot(TelegramClient):
             caption=caption or "",
         )
         try:
-            sticker = "CAACAgUAAx0CXrXkIgABAey6ZvrU0WFkywEiOF_AQB0SASKXITUAAlcRAALfptFXdWTFMJFRrB8eBA"
-            await self.send_file(
-                channel_id if channel_id else Var.MAIN_CHANNEL,
-                sticker,
-            )
+            message = await client.get_messages(Var.MAIN_CHANNEL, ids=25)
+            if message and message.media:
+                await self.send_file(
+                    channel_id if channel_id else Var.MAIN_CHANNEL,
+                    message.media,
+                )
         except Exception as e:
             self.logger.warning(f"Error {e}")
             pass
