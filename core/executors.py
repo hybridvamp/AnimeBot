@@ -56,7 +56,7 @@ class Executors:
     async def execute(self):
         try:
             rename = await self.anime_info.rename(self.is_original)
-            self.output_file = f"encode/{rename}"
+            self.output_file = f"encode/@Anim_Hy.{rename}"
             thumb = await self.tools.cover_dl((await self.anime_info.get_poster()))
             if self.is_original:
                 await self.reporter.started_renaming()
