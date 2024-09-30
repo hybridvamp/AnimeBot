@@ -132,6 +132,14 @@ class Bot(TelegramClient):
             file=file,
             caption=caption or "",
         )
+        try:
+            sticker = "CAACAgUAAx0CXrXkIgABAey6ZvrU0WFkywEiOF_AQB0SASKXITUAAlcRAALfptFXdWTFMJFRrB8eBA"
+            await self.send_file(
+                channel_id if channel_id else Var.MAIN_CHANNEL,
+                sticker,
+            )
+        except:
+            pass
         return post
 
     async def is_joined(self, channel_id, user_id):
