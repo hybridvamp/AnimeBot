@@ -133,7 +133,7 @@ class Bot(TelegramClient):
             caption=caption or "",
         )
         try:
-            message = await client.get_messages(Var.MAIN_CHANNEL, ids=25)
+            message = await self.get_messages(Var.MAIN_CHANNEL, ids=25)
             if message and message.media:
                 await self.send_file(
                     channel_id if channel_id else Var.MAIN_CHANNEL,
