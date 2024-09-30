@@ -39,7 +39,7 @@ ABOUT = """
 • **🏔️ Pyrogram**: `{}`
 • **💻 Server**: `{}`
 
-▶ Run by @HybridUpdates
+● Hosted by @HybridUpdates
 """
 
 

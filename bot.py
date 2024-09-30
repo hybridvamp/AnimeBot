@@ -163,7 +163,7 @@ async def anime(data):
         button_upload = await dB.is_button_upload()
         for i in torr:
             try:
-                filename = f"downloads/{i.title}"
+                filename = f"downloads/@Anim_Hy.{i.title}"
                 reporter = Reporter(bot, i.title)
                 await reporter.alert_new_file_founded()
                 await torrent.download_magnet(i.link, "./downloads/")
