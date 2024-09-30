@@ -72,7 +72,7 @@ class DataBase:
 
     async def is_original_upload(self):
         data = await self.opts_db.find_one({"_id": "OG_UPLOAD"})
-        return (data or {}).get("switch") or False
+        return (data or {}).get("switch") or True
 
     async def toggle_button_upload(self):
         data = await self.opts_db.find_one({"_id": "BUTTON_UPLOAD"})
