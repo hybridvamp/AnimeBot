@@ -138,7 +138,8 @@ class Bot(TelegramClient):
                 channel_id if channel_id else Var.MAIN_CHANNEL,
                 sticker,
             )
-        except:
+        except Exception as e:
+            self.logger.warning(f"Error {e}")
             pass
         return post
 
