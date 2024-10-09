@@ -179,7 +179,7 @@ async def gen_link_s(event):
     string += file_id
     outstr = base64.urlsafe_b64encode(string.encode("ascii")).decode().strip("=")
     
-    me = bot.get_me()
+    me = await bot.get_me()
     U_NAME = f"@{me.username}"
     await event.reply(f"Here is your Link:\nhttps://t.me/{U_NAME}?start={outstr}")
 
@@ -227,7 +227,7 @@ async def gen_link_batch(event):
         return await event.reply(f'Error: {e}')
 
     sts = await event.reply("Generating link for your message.\nThis may take time depending on the number of messages.")
-    me = bot.get_me()
+    me = await bot.get_me()
     U_NAME = f"@{me.username}"
     string = f"{f_msg_id}_{l_msg_id}_{chat.id}_{cmd.lower().strip()}"
     b_64 = base64.urlsafe_b64encode(string.encode("ascii")).decode().strip("=")
