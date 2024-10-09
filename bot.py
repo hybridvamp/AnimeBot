@@ -95,10 +95,10 @@ async def _start(event):
             for msg_id in range(f_msg_id, l_msg_id + 1):
                 try:
                     msg = await bot.get_messages(Var.BACKUP_CHANNEL, ids=int(msg_id))
-                    await event.reply(file=[i for i in msg])
+                    await event.reply(msg)
                 except FloodWaitError as e:
                     await asyncio.sleep(e.seconds + 1)
-                    await event.reply(file=[i for i in msg])
+                    await event.reply(msg)
                 except Exception as e:
                     logger.exception(e)
                     continue
