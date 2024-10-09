@@ -30,7 +30,9 @@ from functions.utils import AdminUtils
 from libs.ariawarp import Torrent
 from libs.logger import LOGS, Reporter
 from libs.subsplease import SubsPlease
+from AnilistPython import Anilist
 
+anilist = Anilist()
 tools = Tools()
 tools.init_dir()
 bot = Bot()
@@ -96,6 +98,32 @@ async def _start(event):
             ],
         )
     await xnx.delete()
+
+@bot.on(
+    events.NewMessage(
+        incoming=True,
+        pattern=r"^/poster ?([\S\s]*)",
+        func=lambda e: e.is_private
+    )
+)
+async def poster_cmd(event):
+    xnx = await event.reply("`Please Wait...`")
+    msg_str = event.pattern_match.group(1).strip()
+
+    if not msg_str:
+        await xnx.edit("Usage: /poster <anime name>\nExample: `/poster demon slayer`")
+        return
+
+    try:
+        aaa = anilist.get_anime_id(msg_str)
+        await xnx.edit(f"✅ Anime found: `{msg_str}`\nAnilist ID: `{aaa}`\n\n**🪄 Generating Poster.....**")
+        await bot.send_file(
+            event.user_id,
+            file=f"https://img.anili.st/media/{aaa}"
+        )
+    except IndexError:
+        await xnx.edit(f"⚠️ Anime not found: `{msg_str}`")
+
 
 
 @bot.on(
