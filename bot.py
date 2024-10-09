@@ -95,11 +95,10 @@ async def _start(event):
             for msg_id in range(f_msg_id, l_msg_id + 1):
                 try:
                     msg = await bot.get_messages(Var.BACKUP_CHANNEL, ids=int(msg_id))
-                    await msg.copy(message.sender_id, protect_content=(protect == "/pbatch"))
+                    await event.reply(file=[i for i in msg])
                 except FloodWaitError as e:
                     await asyncio.sleep(e.seconds + 1)
-                    # Retry copying after waiting
-                    await msg.copy(message.sender_id, protect_content=(protect == "/pbatch"))
+                    await event.reply(file=[i for i in msg])
                 except Exception as e:
                     logger.exception(e)
                     continue
