@@ -88,17 +88,17 @@ async def _start(event):
                 f_msg_id, l_msg_id, f_chat_id = decoded.split("_", 2)
                 protect = "batch"
 
-            diff = int(l_msg_id) - int(f_msg_id)
-
-            messages = await bot.get_messages(int(f_chat_id), limit=diff, offset_id=int(l_msg_id))
-
-            messages = messages[::-1]
-
-            for msg in messages:
+            # Get the range of message IDs to process
+            f_msg_id, l_msg_id, f_chat_id = map(int, [f_msg_id, l_msg_id, f_chat_id])
+            
+            # Iterate through the message IDs from the first to the last
+            for msg_id in range(f_msg_id, l_msg_id + 1):
                 try:
+                    msg = await bot.get_message(f_chat_id, msg_id)
                     await msg.copy(message.chat_id, protect_content=(protect == "/pbatch"))
                 except FloodWaitError as e:
                     await asyncio.sleep(e.seconds + 1)
+                    # Retry copying after waiting
                     await msg.copy(message.chat_id, protect_content=(protect == "/pbatch"))
                 except Exception as e:
                     logger.exception(e)
