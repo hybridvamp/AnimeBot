@@ -84,11 +84,17 @@ async def _start(event):
             decoded = (base64.urlsafe_b64decode(b_string + "=" * (-len(b_string) % 4))).decode("ascii")
             try:
                 f_msg_id, l_msg_id, f_chat_id, protect = decoded.split("_", 3)
-            except:
+            except ValueError:
                 f_msg_id, l_msg_id, f_chat_id = decoded.split("_", 2)
                 protect = "batch"
+
             diff = int(l_msg_id) - int(f_msg_id)
-            async for msg in bot.iter_messages(int(f_chat_id), min_id=int(f_msg_id), max_id=int(l_msg_id)):
+
+            messages = await bot.get_messages(int(f_chat_id), limit=diff, offset_id=int(l_msg_id))
+
+            messages = messages[::-1]
+
+            for msg in messages:
                 try:
                     await msg.copy(message.chat_id, protect_content=(protect == "/pbatch"))
                 except FloodWaitError as e:
@@ -98,6 +104,7 @@ async def _start(event):
                     logger.exception(e)
                     continue
                 await asyncio.sleep(1)
+
         else:
             items = await dB.get_store_items(msg_id)
             if items:
@@ -114,7 +121,7 @@ async def _start(event):
             f"**Enjoy Ongoing Anime's Best Encode 24/7 🫡**",
             buttons=[
                 [
-                    Button.url("Join", url="Var.FORCESUB_CHANNEL_LINK"),
+                    Button.url("Join", url=Var.FORCESUB_CHANNEL_LINK),
                     Button.url(
                         "Bot Updates",
                         url="https://t.me/hybridupdates",
