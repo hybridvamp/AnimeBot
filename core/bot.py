@@ -122,7 +122,7 @@ class Bot(TelegramClient):
             file,
             caption=f"`{caption}`",
             force_document=True,
-            thumb=thumb or "thumb.jpg",
+            thumb=thumb or "assest/thumb.png",
         )
         return post
 

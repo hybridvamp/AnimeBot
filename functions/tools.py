@@ -113,7 +113,7 @@ class Tools:
         thumb = await self.cover_dl((await anime_info.get_cover()))
         caption = await anime_info.get_caption()
         return await bot.upload_poster(
-            thumb or "assest/poster_not_found.jpg",
+            thumb or "assest/poster_not_found.png",
             caption,
             channel_id if channel_id else None,
         )
@@ -134,9 +134,9 @@ class Tools:
             LOGS.error(str(format_exc()))
 
     def init_dir(self):
-        if not os.path.exists("thumb.jpg"):
+        if not os.path.exists("assest/thumb.png"):
             content = requests.get(Var.THUMB).content
-            with open("thumb.jpg", "wb") as f:
+            with open("assest/thumb.png", "wb") as f:
                 f.write(content)
         if not os.path.isdir("encode/"):
             os.mkdir("encode/")
