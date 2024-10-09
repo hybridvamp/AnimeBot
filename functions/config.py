@@ -52,7 +52,7 @@ class Var:
     FFMPEG = config("FFMPEG", default="ffmpeg")
     CRF = config("CRF", default="20")
     SEND_SCHEDULE = config("SEND_SCHEDULE", default=False, cast=bool)
-    RESTART_EVERDAY = config("RESTART_EVERDAY", default=True, cast=bool)
+    RESTART_EVERDAY = config("RESTART_EVERDAY", default=False, cast=bool)
     LOG_ON_MAIN = config("LOG_ON_MAIN", default=False, cast=bool)
     FORCESUB_CHANNEL_LINK = config("FORCESUB_CHANNEL_LINK", default="", cast=str)
 
