@@ -118,7 +118,7 @@ async def poster_cmd(event):
         aaa = anilist.get_anime_id(msg_str)
         await xnx.edit(f"✅ Anime found: `{msg_str}`\nAnilist ID: `{aaa}`\n\n**🪄 Generating Poster.....**")
         await bot.send_file(
-            event.user_id,
+            event.sender_id,
             file=f"https://img.anili.st/media/{aaa}"
         )
     except IndexError:
