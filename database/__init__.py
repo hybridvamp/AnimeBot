@@ -86,7 +86,7 @@ class DataBase:
 
     async def is_button_upload(self):
         data = await self.opts_db.find_one({"_id": "BUTTON_UPLOAD"})
-        return (data or {}).get("switch") or True
+        return (data or {}).get("switch") or False
 
     async def is_anime_uploaded(self, uid):
         data = await self.file_info_db.find_one({"_id": uid})
