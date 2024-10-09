@@ -56,8 +56,6 @@ admin = AdminUtils(dB, bot)
 async def _start(event):
     xnx = await event.reply("`Please Wait...`")
     msg_id = event.pattern_match.group(1)
-    command_text = event.message.text
-    _, msg_str = command_text.split(maxsplit=1)
     await dB.add_broadcast_user(event.sender_id)
     if Var.FORCESUB_CHANNEL and Var.FORCESUB_CHANNEL_LINK:
         is_user_joined = await bot.is_joined(Var.FORCESUB_CHANNEL, event.sender_id)
@@ -80,16 +78,9 @@ async def _start(event):
         if msg_id.isdigit():
             msg = await bot.get_messages(Var.BACKUP_CHANNEL, ids=int(msg_id))
             await event.reply(msg)
-        else:
-            items = await dB.get_store_items(msg_id)
-            if items:
-                for id in items:
-                    msg = await bot.get_messages(Var.CLOUD_CHANNEL, ids=id)
-                    await event.reply(file=[i for i in msg])
-    elif msg_str:
-        if re.match(r'^DSTORE-', msg_str):
+        elif re.match(r'^DSTORE-', msg_id):
             await xnx.edit("Loading batch files....")
-            b_string = msg_str.split("-", 1)[1]
+            b_string = msg_id.split("-", 1)[1]
             decoded = (base64.urlsafe_b64decode(b_string + "=" * (-len(b_string) % 4))).decode("ascii")
             try:
                 f_msg_id, l_msg_id, f_chat_id, protect = decoded.split("_", 3)
@@ -106,8 +97,13 @@ async def _start(event):
                 except Exception as e:
                     logger.exception(e)
                     continue
-
                 await asyncio.sleep(1)
+        else:
+            items = await dB.get_store_items(msg_id)
+            if items:
+                for id in items:
+                    msg = await bot.get_messages(Var.CLOUD_CHANNEL, ids=id)
+                    await event.reply(file=[i for i in msg])
     else:
         if event.sender_id == Var.OWNER:
             return await xnx.edit(
