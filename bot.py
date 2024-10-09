@@ -94,12 +94,12 @@ async def _start(event):
             # Iterate through the message IDs from the first to the last
             for msg_id in range(f_msg_id, l_msg_id + 1):
                 try:
-                    msg = await bot.get_messages(f_chat_id, msg_id)
-                    await msg.copy(message.chat_id, protect_content=(protect == "/pbatch"))
+                    msg = await bot.get_messages(Var.BACKUP_CHANNEL, msg_id)
+                    await msg.copy(message.sender_id, protect_content=(protect == "/pbatch"))
                 except FloodWaitError as e:
                     await asyncio.sleep(e.seconds + 1)
                     # Retry copying after waiting
-                    await msg.copy(message.chat_id, protect_content=(protect == "/pbatch"))
+                    await msg.copy(message.sender_id, protect_content=(protect == "/pbatch"))
                 except Exception as e:
                     logger.exception(e)
                     continue
