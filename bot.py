@@ -121,6 +121,7 @@ async def poster_cmd(event):
             event.sender_id,
             file=f"https://img.anili.st/media/{aaa}"
         )
+        await xnx.edit(f"✅ Poster Generated for: `{msg_str}`\nAnilist ID: `{aaa}`")
     except IndexError:
         await xnx.edit(f"⚠️ Anime not found: `{msg_str}`")
 
