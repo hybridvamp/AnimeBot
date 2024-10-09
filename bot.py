@@ -56,6 +56,8 @@ admin = AdminUtils(dB, bot)
 async def _start(event):
     xnx = await event.reply("`Please Wait...`")
     msg_id = event.pattern_match.group(1)
+    command_text = event.message.text
+    _, msg_str = command_text.split(maxsplit=1)
     await dB.add_broadcast_user(event.sender_id)
     if Var.FORCESUB_CHANNEL and Var.FORCESUB_CHANNEL_LINK:
         is_user_joined = await bot.is_joined(Var.FORCESUB_CHANNEL, event.sender_id)
@@ -78,9 +80,16 @@ async def _start(event):
         if msg_id.isdigit():
             msg = await bot.get_messages(Var.BACKUP_CHANNEL, ids=int(msg_id))
             await event.reply(msg)
-        elif msg_id.startswith("DSTORE"):
+        else:
+            items = await dB.get_store_items(msg_id)
+            if items:
+                for id in items:
+                    msg = await bot.get_messages(Var.CLOUD_CHANNEL, ids=id)
+                    await event.reply(file=[i for i in msg])
+    elif msg_str:
+        if re.match(r'^DSTORE-', msg_str):
             await xnx.edit("Loading batch files....")
-            b_string = msg_id.split("-", 1)[1]
+            b_string = msg_str.split("-", 1)[1]
             decoded = (base64.urlsafe_b64decode(b_string + "=" * (-len(b_string) % 4))).decode("ascii")
             try:
                 f_msg_id, l_msg_id, f_chat_id, protect = decoded.split("_", 3)
@@ -99,12 +108,6 @@ async def _start(event):
                     continue
 
                 await asyncio.sleep(1)
-        else:
-            items = await dB.get_store_items(msg_id)
-            if items:
-                for id in items:
-                    msg = await bot.get_messages(Var.CLOUD_CHANNEL, ids=id)
-                    await event.reply(file=[i for i in msg])
     else:
         if event.sender_id == Var.OWNER:
             return await xnx.edit(
@@ -180,7 +183,7 @@ async def gen_link_s(event):
     outstr = base64.urlsafe_b64encode(string.encode("ascii")).decode().strip("=")
     
     me = await bot.get_me()
-    U_NAME = f"@{me.username}"
+    U_NAME = f"{me.username}"
     await event.reply(f"Here is your Link:\nhttps://t.me/{U_NAME}?start={outstr}")
 
 @bot.on(events.NewMessage(pattern=r'/batch|/pbatch'))
@@ -228,7 +231,7 @@ async def gen_link_batch(event):
 
     sts = await event.reply("Generating link for your message.\nThis may take time depending on the number of messages.")
     me = await bot.get_me()
-    U_NAME = f"@{me.username}"
+    U_NAME = f"{me.username}"
     string = f"{f_msg_id}_{l_msg_id}_{chat.id}_{cmd.lower().strip()}"
     b_64 = base64.urlsafe_b64encode(string.encode("ascii")).decode().strip("=")
     await sts.edit(f"Here is your link: https://t.me/{U_NAME}?start=DSTORE-{b_64}")
