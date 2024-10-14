@@ -97,10 +97,10 @@ async def _start(event):
                     msg = await bot.get_messages(Var.BACKUP_CHANNEL, ids=int(msg_id))
                     if not msg:
                         continue
-                    await event.reply(msg)
+                    await xnx.reply(msg)
                 except FloodWaitError as e:
                     await asyncio.sleep(e.seconds + 1)
-                    await event.reply(msg)
+                    await xnx.reply(msg)
                 except Exception as e:
                     LOGS.error(e)
                     continue
