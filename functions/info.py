@@ -31,7 +31,7 @@ class AnimeInfo:
 **{}
 ━━━━━━━━━━━━━━━
 ‣ Language:** `Japanese [ESub]`
-**‣ Quality:** `480p|720p|1080p`
+**‣ Quality:** `480p | 720p | 1080p`
 **‣ Season:** `{}`
 **‣ Episode:** `{}`
 **━━━━━━━━━━━━━━━**

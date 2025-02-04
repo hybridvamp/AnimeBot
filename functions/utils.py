@@ -76,7 +76,7 @@ class AdminUtils:
     async def _logs(self, e):
         await e.delete()
         await e.reply(
-            file="AutoAnimeBot.log", thumb="thumb.jpg", buttons=self.back_btn()
+            file="AutoAnimeBot.log", thumb="assest/thumb.png", buttons=self.back_btn()
         )
 
     async def _restart(self, e, schedule):

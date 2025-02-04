@@ -17,6 +17,7 @@
 # credit to t.me/kAiF_00z (github.com/kaif-00z)
 # little bit inspired from pyUltroid.BaseClient
 
+import os
 import asyncio
 import sys
 from logging import Logger
@@ -117,13 +118,25 @@ class Bot(TelegramClient):
                 await self.pyro_client.connect()
             except ConnectionError:
                 pass
-        post = await self.pyro_client.send_document(
-            Var.BACKUP_CHANNEL if is_button else Var.MAIN_CHANNEL,
-            file,
-            caption=f"`{caption}`",
-            force_document=True,
-            thumb=thumb or "thumb.jpg",
-        )
+        file_size = os.path.getsize(file)
+        file_size_mb = file_size / (1024 * 1024)
+        if file_size_mb > 1980 and Var.SESSION:
+            await self.user_client.send_file(
+                Var.BACKUP_CHANNEL if is_button else Var.MAIN_CHANNEL,
+                file=file,
+                caption=caption,
+                force_document=True,
+                thumb=thumb or "assets/thumb.png",
+                attributes=[types.DocumentAttributeFilename(file)]
+            )
+        else:
+            post = await self.pyro_client.send_document(
+                Var.BACKUP_CHANNEL if is_button else Var.MAIN_CHANNEL,
+                file,
+                caption=f"`{caption}`",
+                force_document=True,
+                thumb=thumb or "assest/thumb.png",
+            )
         return post
 
     async def upload_poster(self, file, caption, channel_id=None):
@@ -132,6 +145,16 @@ class Bot(TelegramClient):
             file=file,
             caption=caption or "",
         )
+        try:
+            message = await self.get_messages(Var.MAIN_CHANNEL, ids=25)
+            if message and message.media:
+                await self.send_file(
+                    channel_id if channel_id else Var.MAIN_CHANNEL,
+                    message.media,
+                )
+        except Exception as e:
+            self.logger.warning(f"Error {e}")
+            pass
         return post
 
     async def is_joined(self, channel_id, user_id):
@@ -146,7 +169,7 @@ class Bot(TelegramClient):
             r = await self.user_client(
                 CreateChannelRequest(
                     title=title,
-                    about="Powered By @Anim_Hy",
+                    about="Powered By @HybridUpdateds",
                     megagroup=False,
                 )
             )

@@ -16,9 +16,16 @@
 # if you are using this following code then don't forgot to give proper
 # credit to t.me/kAiF_00z (github.com/kaif-00z)
 
+import base64
+import re
+import json
+import os
+
+from AnilistPython import Anilist
 from traceback import format_exc
 
 from telethon import Button, events
+from telethon.errors.rpcerrorlist import FloodWaitError
 
 from core.bot import Bot
 from core.executors import Executors
@@ -31,6 +38,7 @@ from libs.ariawarp import Torrent
 from libs.logger import LOGS, Reporter
 from libs.subsplease import SubsPlease
 
+anilist = Anilist()
 tools = Tools()
 tools.init_dir()
 bot = Bot()
@@ -71,6 +79,33 @@ async def _start(event):
         if msg_id.isdigit():
             msg = await bot.get_messages(Var.BACKUP_CHANNEL, ids=int(msg_id))
             await event.reply(msg)
+        elif re.match(r'^DSTORE-', msg_id):
+            await xnx.edit("Loading batch files....")
+            b_string = msg_id.split("-", 1)[1]
+            decoded = (base64.urlsafe_b64decode(b_string + "=" * (-len(b_string) % 4))).decode("ascii")
+            try:
+                f_msg_id, l_msg_id, f_chat_id, protect = decoded.split("_", 3)
+            except ValueError:
+                f_msg_id, l_msg_id, f_chat_id = decoded.split("_", 2)
+                protect = "batch"
+
+            # Get the range of message IDs to process
+            f_msg_id, l_msg_id, f_chat_id = map(int, [f_msg_id, l_msg_id, f_chat_id])
+
+            # Iterate through the message IDs from the first to the last
+            for msg_id in range(f_msg_id, l_msg_id + 1):
+                try:
+                    msg = await bot.get_messages(Var.BACKUP_CHANNEL, ids=int(msg_id))
+                    if not msg:
+                        continue
+                    await xnx.reply(msg)
+                except FloodWaitError as e:
+                    await asyncio.sleep(e.seconds + 1)
+                    await xnx.reply(msg)
+                except Exception as e:
+                    LOGS.error(e)
+                    continue
+                await asyncio.sleep(1)
         else:
             items = await dB.get_store_items(msg_id)
             if items:
@@ -87,15 +122,123 @@ async def _start(event):
             f"**Enjoy Ongoing Anime's Best Encode 24/7 🫡**",
             buttons=[
                 [
-                    Button.url("🚀 Updates", url="t.me/Anim_Hy"),
+                    Button.url("Join", url=Var.FORCESUB_CHANNEL_LINK),
                     Button.url(
-                        "⚙️ Hosted",
+                        "Bot Updates",
                         url="https://t.me/hybridupdates",
                     ),
                 ]
             ],
         )
     await xnx.delete()
+
+@bot.on(
+    events.NewMessage(
+        incoming=True,
+        pattern=r"^/poster ?([\S\s]*)",
+        func=lambda e: e.is_private
+    )
+)
+async def poster_cmd(event):
+    xnx = await event.reply("`Please Wait...`")
+    msg_str = event.pattern_match.group(1).strip()
+
+    if not msg_str:
+        await xnx.edit("Usage: /poster <anime name>\nExample: `/poster demon slayer`")
+        return
+
+    try:
+        aaa = anilist.get_anime_id(msg_str)
+        await xnx.edit(f"✅ Anime found: `{msg_str}`\nAnilist ID: `{aaa}`\n\n**🪄 Generating Poster.....**")
+        await bot.send_file(
+            event.sender_id,
+            file=f"https://img.anili.st/media/{aaa}"
+        )
+        await xnx.edit(f"✅ Poster Generated for: `{msg_str}`\nAnilist ID: `{aaa}`")
+    except IndexError:
+        await xnx.edit(f"⚠️ Anime not found: `{msg_str}`")
+
+
+ADMINS = Var.OWNER
+FILE_STORE_CHANNEL = Var.CLOUD_CHANNEL
+LOG_CHANNEL = Var.LOG_CHANNEL
+
+@bot.on(events.NewMessage(pattern=r'/link|/plink'))
+async def gen_link_s(event):
+    replied = await event.get_reply_message()
+
+    if not replied:
+        return await event.reply('Reply to a message to get a shareable link.')
+
+    if not replied.media:
+        return await event.reply("Reply to a supported media")
+
+    # Check protected content
+    if event.message.is_protected and event.chat_id not in ADMINS:
+        return await event.reply("okDa")
+
+    file_type = type(replied.media).__name__.lower()
+    file_id, ref = unpack_new_file_id(getattr(replied, file_type).file.id)
+
+    # Create the encoded string
+    command = event.text.lower().strip()
+    string = 'filep_' if command == "/plink" else 'file_'
+    string += file_id
+    outstr = base64.urlsafe_b64encode(string.encode("ascii")).decode().strip("=")
+
+    me = await bot.get_me()
+    U_NAME = f"{me.username}"
+    await event.reply(f"Here is your Link:\nhttps://t.me/{U_NAME}?start={outstr}")
+
+@bot.on(events.NewMessage(pattern=r'/batch|/pbatch'))
+async def gen_link_batch(event):
+    message_text = event.raw_text.strip()
+
+    if " " not in message_text:
+        return await event.reply("Use correct format.\nExample: /batch https://t.me/hybrid_movies/10 https://t.me/hybrid_movies/20")
+
+    links = message_text.split(" ")
+
+    if len(links) != 3:
+        return await event.reply("Use correct format.\nExample: /batch https://t.me/hybrid_movies/10 https://t.me/hybrid_movies/20")
+
+    cmd, first, last = links
+    regex = re.compile(r"(https://)?(t\.me/|telegram\.me/|telegram\.dog/)(c/)?(\d+|[a-zA-Z_0-9]+)/(\d+)$")
+
+    match = regex.match(first)
+    if not match:
+        return await event.reply('Invalid link')
+
+    f_chat_id = match.group(4)
+    f_msg_id = int(match.group(5))
+
+    if f_chat_id.isnumeric():
+        f_chat_id = int("-100" + f_chat_id)
+
+    match = regex.match(last)
+    if not match:
+        return await event.reply('Invalid link')
+
+    l_chat_id = match.group(4)
+    l_msg_id = int(match.group(5))
+
+    if l_chat_id.isnumeric():
+        l_chat_id = int("-100" + l_chat_id)
+
+    if f_chat_id != l_chat_id:
+        return await event.reply("Chat ids not matched.")
+
+    try:
+        chat = await bot.get_entity(f_chat_id)
+    except Exception as e:
+        return await event.reply(f'Error: {e}')
+
+    sts = await event.reply("Generating link for your message.\nThis may take time depending on the number of messages.")
+    me = await bot.get_me()
+    U_NAME = f"{me.username}"
+    string = f"{f_msg_id}_{l_msg_id}_{chat.id}_{cmd.lower().strip()}"
+    b_64 = base64.urlsafe_b64encode(string.encode("ascii")).decode().strip("=")
+    await sts.edit(f"Here is your link: https://t.me/{U_NAME}?start=DSTORE-{b_64}")
 
 
 @bot.on(

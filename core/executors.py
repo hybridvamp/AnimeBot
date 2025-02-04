@@ -56,7 +56,7 @@ class Executors:
     async def execute(self):
         try:
             rename = await self.anime_info.rename(self.is_original)
-            self.output_file = f"encode/{rename}"
+            self.output_file = f"encode/@Anim_Hy.{rename}"
             thumb = await self.tools.cover_dl((await self.anime_info.get_poster()))
             if self.is_original:
                 await self.reporter.started_renaming()
@@ -76,7 +76,7 @@ class Executors:
             await self.reporter.started_uploading()
             if self.is_button:
                 msg = await self.bot.upload_anime(
-                    self.output_file, rename, thumb or "thumb.jpg", is_button=True
+                    self.output_file, rename, thumb or "assest/thumb.png", is_button=True
                 )
                 btn = Button.url(
                     f"{self.anime_info.data.get('video_resolution')}",
@@ -85,7 +85,7 @@ class Executors:
                 self.msg_id = msg.id
                 return True, btn
             msg = await self.bot.upload_anime(
-                self.output_file, rename, thumb or "thumb.jpg"
+                self.output_file, rename, thumb or "assest/thumb.png"
             )
             self.msg_id = msg.id
             return True, []
@@ -123,12 +123,12 @@ class Executors:
                 if ss_path and sp_path:
                     ss = await self.bot.send_message(
                         Var.CLOUD_CHANNEL,
-                        file=glob(f"{ss_path}/*") or ["assest/poster_not_found.jpg"],
+                        file=glob(f"{ss_path}/*") or ["assest/poster_not_found.png"],
                     )
                     sp = await self.bot.send_message(
                         Var.CLOUD_CHANNEL,
                         file=sp_path,
-                        thumb="thumb.jpg",
+                        thumb="assest/thumb.png",
                         force_document=True,
                     )
                     await self.db.store_items(_hash, [[i.id for i in ss], [sp.id]])
