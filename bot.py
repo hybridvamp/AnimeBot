@@ -46,12 +46,15 @@ scheduler.start()
 print("Scheduler started!")
 
 def delete_files():
-    directory = os.getcwd()
-    for file in os.listdir(directory):
-        file_path = os.path.join(directory, file)
-        if os.path.isfile(file_path):
-            os.remove(file_path)
-            print(f"Deleted file: {file_path}")
+    downloads_path = os.path.join(os.getcwd(), "downloads")
+    if os.path.exists(downloads_path) and os.path.isdir(downloads_path):
+        for file in os.listdir(downloads_path):
+            file_path = os.path.join(downloads_path, file)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+                LOGS.info(f"Deleted file: {file_path}")
+    else:
+        LOGS.info("'downloads' folder not found.")
 
 scheduler.add_job(delete_files, "interval", seconds=86400)
 print("Added Files clean Scheduler for a day")
