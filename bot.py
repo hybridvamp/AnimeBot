@@ -37,6 +37,23 @@ from functions.utils import AdminUtils
 from libs.ariawarp import Torrent
 from libs.logger import LOGS, Reporter
 from libs.subsplease import SubsPlease
+from apscheduler.schedulers.background import BackgroundScheduler
+
+scheduler = BackgroundScheduler()
+print("----------Starting Scheduler----------")
+scheduler.start()
+print("Scheduler started!")
+
+def delete_files():
+    directory = os.getcwd()
+    for file in os.listdir(directory):
+        file_path = os.path.join(directory, file)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+            print(f"Deleted file: {file_path}")
+
+scheduler.add_job(restart, "interval", seconds=86400)
+print("Added Files clean Scheduler for a day")
 
 anilist = Anilist()
 tools = Tools()
@@ -341,6 +358,7 @@ async def anime(data):
 
 
 try:
+    delete_files()
     bot.loop.run_until_complete(subsplease.on_new_anime(anime))
     bot.run()
 except KeyboardInterrupt:
