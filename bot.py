@@ -40,9 +40,9 @@ from libs.subsplease import SubsPlease
 from apscheduler.schedulers.background import BackgroundScheduler
 
 scheduler = BackgroundScheduler()
-print("----------Starting Scheduler----------")
+LOGS.info("----------Starting Scheduler----------")
 scheduler.start()
-print("Scheduler started!")
+LOGS.info("Scheduler started!")
 
 def delete_files():
     directory = os.getcwd()
@@ -50,10 +50,10 @@ def delete_files():
         file_path = os.path.join(directory, file)
         if os.path.isfile(file_path):
             os.remove(file_path)
-            print(f"Deleted file: {file_path}")
+            LOGS.info(f"Deleted file: {file_path}")
 
 scheduler.add_job(delete_files, "interval", seconds=86400)
-print("Added Files clean Scheduler for a day")
+LOGS.info("Added Files clean Scheduler for a day")
 
 anilist = Anilist()
 tools = Tools()
