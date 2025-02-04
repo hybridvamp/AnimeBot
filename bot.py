@@ -52,7 +52,7 @@ def delete_files():
             os.remove(file_path)
             print(f"Deleted file: {file_path}")
 
-scheduler.add_job(restart, "interval", seconds=86400)
+scheduler.add_job(delete_files, "interval", seconds=86400)
 print("Added Files clean Scheduler for a day")
 
 anilist = Anilist()
