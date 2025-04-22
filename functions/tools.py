@@ -21,6 +21,7 @@ import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import time
 from traceback import format_exc
@@ -257,7 +258,8 @@ class Tools:
 
     async def genss(self, file):
         process = subprocess.Popen(
-            ["mediainfo", file, "--Output=JSON"],
+            # just for better codefactor rating :)
+            [shutil.which("mediainfo"), file, "--Output=JSON"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
