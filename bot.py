@@ -40,6 +40,11 @@ from libs.subsplease import SubsPlease
 from apscheduler.schedulers.background import BackgroundScheduler
 
 scheduler = BackgroundScheduler()
+
+print("----------Starting Scheduler----------")
+scheduler.start()
+print("Scheduler started!")
+=======
 LOGS.info("----------Starting Scheduler----------")
 scheduler.start()
 LOGS.info("Scheduler started!")
@@ -54,6 +59,10 @@ def delete_files():
                 LOGS.info(f"Deleted file: {file_path}")
     else:
         LOGS.info("'downloads' folder not found.")
+
+scheduler.add_job(delete_files, "interval", seconds=86400)
+print("Added Files clean Scheduler for a day")
+=======
             
 
 scheduler.add_job(delete_files, "interval", seconds=86400)
