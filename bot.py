@@ -44,7 +44,6 @@ scheduler = BackgroundScheduler()
 print("----------Starting Scheduler----------")
 scheduler.start()
 print("Scheduler started!")
-=======
 LOGS.info("----------Starting Scheduler----------")
 scheduler.start()
 LOGS.info("Scheduler started!")
@@ -62,7 +61,6 @@ def delete_files():
 
 scheduler.add_job(delete_files, "interval", seconds=86400)
 print("Added Files clean Scheduler for a day")
-=======
             
 
 scheduler.add_job(delete_files, "interval", seconds=86400)
