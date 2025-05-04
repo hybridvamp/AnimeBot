@@ -53,6 +53,7 @@ def delete_files():
             if os.path.isfile(file_path):
                 os.remove(file_path)
                 LOGS.info(f"Deleted file: {file_path}")
+        LOGS.info("delete_files completed")
     else:
         LOGS.info("'downloads' folder not found.")
 
@@ -268,6 +269,46 @@ async def gen_link_batch(event):
 async def _(e):
     await admin._about(e)
 
+@bot.on(events.NewMessage(incoming=True, pattern="^/broadcast", func=lambda e: e.is_private))
+async def broadcast_cmd(e):
+    if e.chat_id not in ADMINS:
+        return await e.reply("**Sorry, you don't have permission to use this command!**")
+        
+    users = await dB.get_broadcast_user()
+    
+    await e.edit("**Please Use This Feature Responsibly ⚠️**")
+    await e.reply(
+        f"**Send a single Message To Broadcast 😉**\n\n**There are** `{len(users)}` **Users Currently Using Me👉🏻**.\n\nSend /cancel to Cancel Process."
+    )
+    
+    if e.is_reply:
+        repl = await e.get_reply_message()
+    else:
+        async with e.client.conversation(e.sender_id) as cv:
+            reply = cv.wait_event(events.NewMessage(from_users=e.sender_id))
+            repl = await reply
+            await e.delete()
+            if repl.text and repl.text.startswith("/cancel"):
+                return await repl.reply("`Broadcast Cancelled`")
+    
+    sent = await repl.reply("`🗣️ Broadcasting Your Post...`")
+    done, er = 0, 0
+    
+    for user in users:
+        try:
+            if repl.poll:
+                await repl.forward_to(int(user))
+            else:
+                await e.client.send_message(int(user), repl.message)
+            await asyncio.sleep(0.2)  # Small delay to avoid rate limiting
+            done += 1
+        except Exception as ex:
+            er += 1
+            logger.error(f"Broadcast error for user {user}: {str(ex)}")
+    
+    await sent.edit(
+        f"**Broadcast Completed To** `{done}` **Users.**\n**Error in** `{er}` **Users.**"
+    )
 
 @bot.on(events.callbackquery.CallbackQuery(data="slog"))
 async def _(e):

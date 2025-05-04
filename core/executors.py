@@ -145,8 +145,8 @@ class Executors:
                     try:
                         shutil.rmtree(_hash)
                         os.remove(sp_path)
-                        os.remove(self.input_file)
                         os.remove(self.output_file)
+                        os.remove(self.input_file)
                     except BaseException:
                         LOGS.error(str(format_exc()))
         except BaseException:
