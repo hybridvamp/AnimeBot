@@ -195,9 +195,9 @@ async def gen_link_s(event):
     if not replied.media:
         return await event.reply("Reply to a supported media")
 
-    # Check protected content
-    if event.message.is_protected and event.chat_id not in ADMINS:
-        return await event.reply("okDa")
+    # # Check protected content
+    # if event.message.is_protected and event.chat_id not in ADMINS:
+    #     return await event.reply("okDa")
 
     file_type = type(replied.media).__name__.lower()
     file_id, ref = unpack_new_file_id(getattr(replied, file_type).file.id)
