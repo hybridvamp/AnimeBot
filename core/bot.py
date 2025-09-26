@@ -214,6 +214,10 @@ class Bot(TelegramClient):
         except BaseException:
             LOGS.error(format_exc())
 
+    async def delete_after(self, messages, seconds: int = 600):
+        await asyncio.sleep(seconds)
+        await asyncio.gather(*[msg.delete() for msg in messages])
+
     def run_in_loop(self, function):
         return self.loop.run_until_complete(function)
 
