@@ -123,7 +123,7 @@ class Executors:
                 sp_msg = await self.bot.send_message(
                     Var.CLOUD_CHANNEL,
                     file=sp_path,
-                    thumb="asset/thumb.jpg",
+                    thumb="assest/thumb.jpg",
                     force_document=True,
                 )
                 await self.db.store_items(_hash, [[i.id for i in ss_msgs], [sp_msg.id]])
