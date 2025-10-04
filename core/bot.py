@@ -33,6 +33,7 @@ from telethon.errors import (
 )
 from telethon.errors.rpcerrorlist import UserNotParticipantError
 from telethon.sessions import StringSession
+from telethon import types
 from telethon.tl.functions.channels import (
     CreateChannelRequest,
     EditPhotoRequest,
@@ -127,7 +128,7 @@ class Bot(TelegramClient):
                 file=file,
                 caption=caption,
                 force_document=True,
-                thumb=thumb or "assets/thumb.png",
+                thumb=thumb or "assets/thumb.jpg",
                 attributes=[types.DocumentAttributeFilename(file)]
             )
         else:
@@ -136,7 +137,7 @@ class Bot(TelegramClient):
                 file,
                 caption=f"`{caption}`",
                 force_document=True,
-                thumb=thumb or "assest/thumb.png",
+                thumb=thumb or "assest/thumb.jpg",
             )
         return post
 

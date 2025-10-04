@@ -76,7 +76,7 @@ class Executors:
             await self.reporter.started_uploading()
             if self.is_button:
                 msg = await self.bot.upload_anime(
-                    self.output_file, rename, thumb or "assest/thumb.png", is_button=True
+                    self.output_file, rename, thumb or "assest/thumb.jpg", is_button=True
                 )
                 btn = Button.url(
                     f"{self.anime_info.data.get('video_resolution')}",
@@ -85,7 +85,7 @@ class Executors:
                 self.msg_id = msg.id
                 return True, btn
             msg = await self.bot.upload_anime(
-                self.output_file, rename, thumb or "assest/thumb.png"
+                self.output_file, rename, thumb or "assest/thumb.jpg"
             )
             self.msg_id = msg.id
             return True, []
@@ -123,7 +123,7 @@ class Executors:
                 sp_msg = await self.bot.send_message(
                     Var.CLOUD_CHANNEL,
                     file=sp_path,
-                    thumb="thumb.jpg",
+                    thumb="asset/thumb.jpg",
                     force_document=True,
                 )
                 await self.db.store_items(_hash, [[i.id for i in ss_msgs], [sp_msg.id]])

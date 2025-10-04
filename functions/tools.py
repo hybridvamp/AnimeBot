@@ -135,9 +135,9 @@ class Tools:
             LOGS.error(str(format_exc()))
 
     def init_dir(self):
-        if not os.path.exists("assest/thumb.png"):
+        if not os.path.exists("assest/thumb.jpg"):
             content = requests.get(Var.THUMB).content
-            with open("assest/thumb.png", "wb") as f:
+            with open("assest/thumb.jpg", "wb") as f:
                 f.write(content)
         if not os.path.isdir("encode/"):
             os.mkdir("encode/")
